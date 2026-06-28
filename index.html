@@ -54,14 +54,24 @@
   .score small{font-size:20px;color:var(--muted)}
   .pill{display:inline-block;background:#222a47;color:var(--muted);border-radius:20px;padding:6px 14px;font-size:13px;margin-top:8px}
   .foot{color:var(--muted);font-size:12px;text-align:center;margin-top:18px}
+  .navwrap{margin:6px 0 4px}
+  .navtoggle{width:100%;background:#222a47;color:var(--txt);border:1.5px solid var(--line);border-radius:12px;padding:11px;font-size:14px;font-weight:600;cursor:pointer}
+  .navgrid{display:none;flex-wrap:wrap;gap:6px;margin:10px 2px;max-height:230px;overflow:auto;padding:4px}
+  .navgrid.show{display:flex}
+  .navcell{width:34px;height:34px;border-radius:8px;border:1.5px solid var(--line);background:#161b30;color:var(--muted);font-size:12.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
+  .navcell.seen{background:#222a47;color:var(--txt)}
+  .navcell.ok{border-color:var(--ok);color:var(--ok)}
+  .navcell.bad{border-color:var(--bad);color:var(--bad)}
+  .navcell.cur{box-shadow:0 0 0 2px var(--acc);color:#fff;background:#1d2547}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>ПИС — карточки для подготовки</h1>
-  <div class="sub">Выбери ответ и нажми «Проверить» — теория появится после проверки. Неверный выбор баллов не отнимает.</div>
+  <div class="sub">Выбери ответ и нажми «Проверить» — теория появится после проверки. Вопросы можно решать в любом порядке: жми «Все вопросы» и переходи к любому. Неверный выбор баллов не отнимает.</div>
   <div class="bar"><i id="prog"></i></div>
   <div class="meta"><span id="counter"></span><span id="scoreLbl"></span></div>
+  <div class="navwrap"><button class="navtoggle" onclick="toggleNav()">▦ Все вопросы — перейти к любому</button><div class="navgrid" id="navGrid"></div></div>
   <div id="app"></div>
   <div class="foot">134 вопроса · по материалам файла «ПИС_ответы_и_теория.docx»</div>
 </div>
@@ -3303,7 +3313,7 @@ function render(){
     h+='<button class="primary" onclick="next()">'+(idx===N-1?'Завершить':'Далее →')+'</button>';
   }
   h+='</div></div>';
-  app.innerHTML=h;
+  app.innerHTML=h;renderNav();
 }
 function hasSel(q){
   if(q.type==='match'){return q.elems.every((_,i)=>q.state.sel[i]);}
@@ -3366,6 +3376,9 @@ function restart(){
 }
 function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
 function escAttr(s){return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;');}
+function goto(i){idx=i;render();}
+function toggleNav(){var g=document.getElementById('navGrid');if(g)g.classList.toggle('show');}
+function renderNav(){var g=document.getElementById('navGrid');if(!g)return;var s2='';for(var i=0;i<N;i++){var s=QUESTIONS[i].state;var cls='navcell';if(s.checked){if(s.correct===true)cls+=' ok';else if(s.correct===false)cls+=' bad';else cls+=' seen';}if(i===idx)cls+=' cur';s2+='<div class=\"'+cls+'\" onclick=\"goto('+i+')\">'+(i+1)+'</div>';}g.innerHTML=s2;}
 render();
 </script>
 </body>
